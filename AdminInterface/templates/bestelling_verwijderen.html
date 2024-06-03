@@ -1,0 +1,9 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Weet u zeker dat u deze bestelling wilt verwijderen?</h2>
+<form method="post">
+    {% csrf_token %}
+    <button type="submit">Ja, verwijderen</button>
+    <a href="{% url 'bestelling_detail' bestelling.pk %}">Nee, annuleren</a>
+</form>
+{% endblock %}

@@ -1,0 +1,22 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Mijn Website{% endblock %}</title>
+    {% load static %}
+    {% include 'links.html'%}
+</head>
+<body>
+    {% include 'navbar.html' %}
+    {% include 'sidebar.html' %}
+    <main>
+        {% block content %}
+        
+        {% endblock %}
+    </main>
+    {% include 'footer.html' %}
+    {% include 'scripts.html'%}
+</body>
+</html>

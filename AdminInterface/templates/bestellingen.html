@@ -1,0 +1,66 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content-wrapper">
+    <section class="content-header">
+        <h1>Bestellingen</h1>
+    </section>
+    <section class="content">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Bestellingen Lijst</h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Klantnaam</th>
+                                    <th>Product(en)</th>
+                                    <th>Hoeveelheid</th>
+                                    <th>Telefoonnummer</th>
+                                    <th>Status</th>
+                                    <th>Voorschot</th>
+                                    <th>Betaling</th>
+                                    <th>Totaal</th>
+                                    <th>Besteldatum</th>
+                                    <th>Gewijzigde datum</th>
+                                    <th>Acties</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for bestelling in bestellingen %}
+                                <tr>
+                                    <td>{{ bestelling.id }}</td>
+                                    <td>{{ bestelling.Klant }}</td>
+                                    <td>{{ bestelling.Product }}</td>
+                                    <td>{{ bestelling.Hoeveelheid }}</td>
+                                    <td>{{ bestelling.Telefoonnummer }}</td>
+                                    <td>{{ bestelling.Status|yesno:"Ja, Nee" }}</td>
+                                    <td>{{ bestelling.Betaling }}</td>
+                                    <td>{{ bestelling.Totaal }}</td>
+                                    <td>{{ bestelling.Voorschot }}</td>
+                                    <td>{{ bestelling.Besteldatum }}</td>
+                                    <td>{{ bestelling.Gewijzigde_datum }}</td>
+                                    <td>
+                                        <a href="{% url 'bestelling_detail' bestelling.id %}" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>
+                                        <a href="{% url 'bestelling_bewerk' bestelling.id %}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
+                                        <form action="{% url 'bestelling_verwijder' bestelling.id %}" method="post" style="display:inline;">
+                                            {% csrf_token %}
+                                            <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
+                                        </form>
+                                        <a href="{% url 'bestelling_mail' bestelling.id %}" class="btn btn-success btn-sm"><i class="fas fa-envelope"></i></a>
+                                    </td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

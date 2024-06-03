@@ -1,0 +1,18 @@
+{% extends 'base.html' %}
+{% block content %}
+<h2>Bestelling Detail</h2>
+<p>Klant: {{ bestelling.Klant }}</p>
+<p>Product: {{ bestelling.Product }}</p>
+<p>Hoeveelheid: {{ bestelling.Hoeveelheid }}</p>
+<p>Adres: {{ bestelling.Adres }}</p>
+<p>Telefoonnummer: {{ bestelling.Telefoonnummer }}</p>
+<p>Datum: {{ bestelling.Datum }}</p>
+<p>Status: {{ bestelling.Status|yesno:"Ja, Nee" }}</p>
+<p>Betaling: {{ bestelling.Betaling }}</p>
+<p>Totaal: {{ bestelling.Totaal }}</p>
+<p>Voorschot: {{ bestelling.Voorschot }}</p>
+<p>Besteldatum: {{ bestelling.Besteldatum }}</p>
+<p>Gewijzigde datum: {{ bestelling.Gewijzigde_datum }}</p>
+<a href="{% url 'bestelling_bewerken' bestelling.pk %}">Bewerken</a>
+<a href="{% url 'bestelling_verwijderen' bestelling.pk %}">Verwijderen</a>
+{% endblock %}
