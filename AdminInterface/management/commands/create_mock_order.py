@@ -5,10 +5,10 @@ from AdminInterface.models import Bestelling, Klant, Product, Categorie
 from datetime import datetime
 
 class Command(BaseCommand):
-    help = 'Maak een mock bestelling aan voor testdoeleinden'
+    help = 'Create a mock order for testing'
 
     def handle(self, *args, **kwargs):
-        # Maak mock data aan indien niet aanwezig
+        # Create mock data if not exists
         if not Categorie.objects.exists():
             categorie = Categorie.objects.create(Productnaam="Electronics")
         else:
@@ -18,7 +18,7 @@ class Command(BaseCommand):
             product = Product.objects.create(
                 Naam="Mock Product",
                 EAN="123456789",
-                Omschrijving="Dit is een mock product.",
+                Omschrijving="This is a mock product.",
                 Prijs=100,
                 Categorie=categorie,
                 Image="uploads/product/mock_product.jpg",
@@ -56,4 +56,4 @@ class Command(BaseCommand):
             Voorschot=0
         )
 
-        self.stdout.write(self.style.SUCCESS('Mock bestelling succesvol aangemaakt'))
+        self.stdout.write(self.style.SUCCESS('Successfully created a mock order'))

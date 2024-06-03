@@ -18,29 +18,34 @@ def bestellingen(request):
 def klanten(request):
     return render(request, 'klanten.html')
 
-def bestelling_detail(request, id):
-    bestelling = get_object_or_404(Bestelling, id=id)
+
+@login_required
+def bestelling_detail(request, pk):
+    bestelling = get_object_or_404(Bestelling, pk=pk)
     return render(request, 'bestelling_detail.html', {'bestelling': bestelling})
 
-def bestelling_bewerk(request, id):
-    bestelling = get_object_or_404(Bestelling, id=id)
+@login_required
+def bestelling_bewerk(request, pk):
+    bestelling = get_object_or_404(Bestelling, pk=pk)
     if request.method == 'POST':
         form = BestellingForm(request.POST, instance=bestelling)
         if form.is_valid():
             form.save()
-            return redirect('bestellingen')
+            return redirect('bestelling_detail', pk=bestelling.pk)
     else:
         form = BestellingForm(instance=bestelling)
     return render(request, 'bestelling_bewerk.html', {'form': form})
 
-def bestelling_verwijder(request, id):
-    bestelling = get_object_or_404(Bestelling, id=id)
+@login_required
+def bestelling_verwijder(request, pk):
+    bestelling = get_object_or_404(Bestelling, pk=pk)
     if request.method == 'POST':
         bestelling.delete()
         return redirect('bestellingen')
     return render(request, 'bestelling_verwijder.html', {'bestelling': bestelling})
 
-def bestelling_mail(request, id):
-    bestelling = get_object_or_404(Bestelling, id=id)
-    # Voeg je logica toe om een e-mail te sturen
-    return redirect('bestellingen')
+@login_required
+def bestelling_mail(request, pk):
+    bestelling = get_object_or_404(Bestelling, pk=pk)
+    # Voeg hier je mail-verzendcode toe
+    return render(request, 'bestelling_mail.html', {'bestelling': bestelling})

@@ -33,6 +33,7 @@ INSTALLED_APPS = [
     'allauth.socialaccount',
     'allauth.socialaccount.providers.google',
     'AdminInterface', #Admin Interface
+    'django_extensions',
 ]
 
 SITE_ID = 1

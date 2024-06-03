@@ -10,6 +10,10 @@ urlpatterns = [
     path('admin/', views.dashboard, name='admin_dashboard'),  
     path('bestellingen/', views.bestellingen, name='bestellingen'),
     path('klanten/', views.klanten, name='klanten'),
+    path('bestellingen/<int:pk>/', views.bestelling_detail, name='bestelling_detail'),
+    path('bestellingen/<int:pk>/bewerk/', views.bestelling_bewerk, name='bestelling_bewerk'),
+    path('bestellingen/<int:pk>/verwijder/', views.bestelling_verwijder, name='bestelling_verwijder'),
+    path('bestellingen/<int:pk>/mail/', views.bestelling_mail, name='bestelling_mail'),
 
     # Anders
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
