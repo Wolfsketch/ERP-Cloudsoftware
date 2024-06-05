@@ -52,15 +52,16 @@ class Bestelling(models.Model):
         ('shipped', 'Product verstuurd'),
     ]
 
-    klant_naam = models.CharField(max_length=100, default='Onbekend')
-    klant_bedrijf = models.CharField(max_length=100, blank=True, default='Geen bedrijf')
-    email = models.EmailField(max_length=100, default='onbekend@example.com')
-    telefoon = models.CharField(max_length=18, default='Onbekend')
-    facturatieadres = models.CharField(max_length=250, default='Onbekend adres')
-    afleveradres = models.CharField(max_length=250, default='Onbekend adres')
+    klant_naam = models.CharField(max_length=100, blank=True, null=True, default='')
+    klant_bedrijf = models.CharField(max_length=100, blank=True, null=True, default='')
+    email = models.EmailField(max_length=100, default='', blank=True)
+    telefoon = models.CharField(max_length=18, default='', blank=True)
+    facturatieadres = models.CharField(max_length=250, default='', blank=True)
+    afleveradres = models.CharField(max_length=250, default='', blank=True)
     besteldatum = models.DateField(default=datetime.datetime.today)
     voorschot = models.DecimalField(default=0, decimal_places=2, max_digits=10)
     totaal = models.DecimalField(default=0, decimal_places=2, max_digits=10)
-    betaling = models.CharField(max_length=50)
+    betaling = models.CharField(max_length=50, default='', blank=True)
     producten = models.ManyToManyField(Product, through=BestellingProduct, blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='ordered')
+    adres = models.CharField(max_length=250, default='', blank=True)
