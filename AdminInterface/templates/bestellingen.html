@@ -1,4 +1,7 @@
 {% extends "base.html" %}
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/responsive.css' %}">
 
 {% block content %}
 <div class="content-wrapper">
@@ -12,7 +15,7 @@
                     <div class="card-header">
                         <h3 class="card-title">Bestellingen Lijst</h3>
                     </div>
-                    <div class="card-body">
+                    <div class="card-body table-responsive p-0">
                         <table class="table table-bordered table-striped">
                             <thead>
                                 <tr>
@@ -33,18 +36,18 @@
                             <tbody>
                                 {% for bestelling in bestellingen %}
                                 <tr>
-                                    <td>{{ bestelling.id }}</td>
-                                    <td>{{ bestelling.Klant }}</td>
-                                    <td>{{ bestelling.Product }}</td>
-                                    <td>{{ bestelling.Hoeveelheid }}</td>
-                                    <td>{{ bestelling.Telefoonnummer }}</td>
-                                    <td>{{ bestelling.Status|yesno:"Ja, Nee" }}</td>
-                                    <td>{{ bestelling.Betaling }}</td>
-                                    <td>{{ bestelling.Totaal }}</td>
-                                    <td>{{ bestelling.Voorschot }}</td>
-                                    <td>{{ bestelling.Besteldatum }}</td>
-                                    <td>{{ bestelling.Gewijzigde_datum }}</td>
-                                    <td>
+                                    <td data-label="#">{{ bestelling.id }}</td>
+                                    <td data-label="Klantnaam">{{ bestelling.Klant }}</td>
+                                    <td data-label="Product(en)">{{ bestelling.Product }}</td>
+                                    <td data-label="Hoeveelheid">{{ bestelling.Hoeveelheid }}</td>
+                                    <td data-label="Telefoonnummer">{{ bestelling.Telefoonnummer }}</td>
+                                    <td data-label="Status">{{ bestelling.Status|yesno:"Ja, Nee" }}</td>
+                                    <td data-label="Voorschot">{{ bestelling.Voorschot }}</td>
+                                    <td data-label="Betaling">{{ bestelling.Betaling }}</td>
+                                    <td data-label="Totaal">{{ bestelling.Totaal }}</td>
+                                    <td data-label="Besteldatum">{{ bestelling.Besteldatum }}</td>
+                                    <td data-label="Gewijzigde datum">{{ bestelling.Gewijzigde_datum }}</td>
+                                    <td data-label="Acties">
                                         <a href="{% url 'bestelling_detail' bestelling.id %}" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>
                                         <a href="{% url 'bestelling_bewerk' bestelling.id %}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
                                         <form action="{% url 'bestelling_verwijder' bestelling.id %}" method="post" style="display:inline;">

@@ -1,0 +1,25 @@
+@media (max-width: 768px) {
+    .table td[data-label]::before {
+        content: attr(data-label);
+        font-weight: bold;
+        display: block;
+    }
+
+    .table td[data-label] {
+        display: block;
+        text-align: right;
+        padding-left: 50%;
+        position: relative;
+    }
+
+    .table td[data-label]::before {
+        position: absolute;
+        left: 0;
+        top: 0;
+        white-space: nowrap;
+    }
+
+    .table td[data-label]:last-child {
+        border-bottom: 1px solid #dee2e6;
+    }
+}

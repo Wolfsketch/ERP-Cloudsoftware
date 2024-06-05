@@ -14,6 +14,11 @@ urlpatterns = [
     path('bestellingen/<int:pk>/bewerk/', views.bestelling_bewerk, name='bestelling_bewerk'),
     path('bestellingen/<int:pk>/verwijder/', views.bestelling_verwijder, name='bestelling_verwijder'),
     path('bestellingen/<int:pk>/mail/', views.bestelling_mail, name='bestelling_mail'),
+    path('create-product/', views.create_product, name='create_product'),
+    path('bestelling-aanmaken/', views.bestelling_create_manual, name='bestelling_create_manual'),
+    path('producten/', views.product_list, name='product_list'),
+    path('product-autocomplete/', views.product_autocomplete, name='product_autocomplete'),  # Zorg ervoor dat deze regel bestaat
+
 
     # Anders
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),

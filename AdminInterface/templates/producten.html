@@ -1,0 +1,52 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="content-wrapper">
+    <section class="content-header">
+        <h1>Producten</h1>
+    </section>
+    <section class="content">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Producten Lijst</h3>
+                    </div>
+                    <div class="card-body table-responsive p-0">
+                        <table class="table table-bordered table-striped">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Naam</th>
+                                    <th>EAN</th>
+                                    <th>Omschrijving</th>
+                                    <th>Prijs</th>
+                                    <th>Categorie</th>
+                                    <th>Image</th>
+                                    <th>Korting</th>
+                                    <th>Korting Prijs</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for product in producten %}
+                                <tr>
+                                    <td>{{ product.id }}</td>
+                                    <td>{{ product.Naam }}</td>
+                                    <td>{{ product.EAN }}</td>
+                                    <td>{{ product.Omschrijving }}</td>
+                                    <td>{{ product.Prijs }}</td>
+                                    <td>{{ product.Categorie }}</td>
+                                    <td><img src="{{ product.Image.url }}" alt="{{ product.Naam }}" width="50"></td>
+                                    <td>{{ product.Korting|yesno:"Ja, Nee" }}</td>
+                                    <td>{{ product.Korting_prijs }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+{% endblock %}

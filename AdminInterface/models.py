@@ -1,8 +1,6 @@
 from django.db import models
 import datetime
-import logging
 
-# Create your models here.
 class Categorie(models.Model):
     Productnaam = models.CharField(max_length=50)
 
@@ -13,8 +11,8 @@ class Klant(models.Model):
     Voornaam = models.CharField(max_length=50)
     Achternaam = models.CharField(max_length=50)
     Bedrijf = models.CharField(max_length=50)
-    Facturatieadres = models.CharField(max_length=50)
-    Adres = models.CharField(max_length=50)
+    Facturatieadres = models.CharField(max_length=250)
+    Adres = models.CharField(max_length=250)
     Telefoonnummer = models.CharField(max_length=18)
     Email = models.EmailField(max_length=100)
     Wachtwoord = models.CharField(max_length=100)
@@ -23,31 +21,46 @@ class Klant(models.Model):
         return f'{self.Voornaam} {self.Achternaam}'
 
 class Product(models.Model):
-    Naam = models.CharField(max_length=100)
-    EAN = models.CharField(max_length=50)
-    Omschrijving = models.CharField(max_length=250, default='', blank=True, null=True)
-    Prijs = models.DecimalField(default=0, decimal_places=0, max_digits=8)
-    Categorie = models.ForeignKey(Categorie, on_delete=models.CASCADE)
-    Image = models.ImageField(upload_to='uploads/product/')
-    Korting = models.BooleanField(default=False)
-    Korting_prijs = models.DecimalField(default=0, decimal_places=0, max_digits=6)
+    naam = models.CharField(max_length=100)
+    ean = models.CharField(max_length=50)
+    omschrijving = models.CharField(max_length=250, default='', blank=True, null=True)
+    prijs = models.DecimalField(default=0, decimal_places=2, max_digits=10)
+    categorie = models.ForeignKey(Categorie, on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='uploads/product/')
+    korting = models.BooleanField(default=False)
+    korting_prijs = models.DecimalField(default=0, decimal_places=2, max_digits=10)
 
     def __str__(self):
-        return self.Naam
+        return self.naam
+
+class BestellingProduct(models.Model):
+    bestelling = models.ForeignKey('Bestelling', on_delete=models.CASCADE)
+    product = models.ForeignKey(Product, on_delete=models.CASCADE)
+    omschrijving = models.CharField(max_length=250, blank=True, null=True)
+    hoeveelheid = models.IntegerField(default=1)
+    eenheidsprijs = models.DecimalField(default=0, decimal_places=2, max_digits=10)
+    belastingen = models.DecimalField(default=0, decimal_places=2, max_digits=10)
+
+    def subtotaal(self):
+        return self.hoeveelheid * self.eenheidsprijs
 
 class Bestelling(models.Model):
-    Product = models.ForeignKey(Product, on_delete=models.CASCADE)
-    Klant = models.ForeignKey(Klant, on_delete=models.CASCADE)
-    Hoeveelheid = models.IntegerField(default=1)
-    Adres = models.CharField(max_length=50)
-    Telefoonnummer = models.CharField(max_length=18)
-    Betaling = models.CharField(max_length=50)
-    Totaal = models.DecimalField(default=0, decimal_places=2, max_digits=10)
-    Voorschot = models.DecimalField(default=0, decimal_places=2, max_digits=10)
-    Besteldatum = models.DateField(default=datetime.datetime.today)
-    Gewijzigde_datum = models.DateField(auto_now=True)
-    Status = models.BooleanField(default=False)
+    STATUS_CHOICES = [
+        ('ordered', 'Product besteld bij de fabrikant'),
+        ('arrived', 'Product aangekomen in het magazijn'),
+        ('ready_for_delivery', 'Product aangemeld voor levering'),
+        ('shipped', 'Product verstuurd'),
+    ]
 
-
-    def __str__(self):
-        return str(self.Product)
+    klant_naam = models.CharField(max_length=100, default='Onbekend')
+    klant_bedrijf = models.CharField(max_length=100, blank=True, default='Geen bedrijf')
+    email = models.EmailField(max_length=100, default='onbekend@example.com')
+    telefoon = models.CharField(max_length=18, default='Onbekend')
+    facturatieadres = models.CharField(max_length=250, default='Onbekend adres')
+    afleveradres = models.CharField(max_length=250, default='Onbekend adres')
+    besteldatum = models.DateField(default=datetime.datetime.today)
+    voorschot = models.DecimalField(default=0, decimal_places=2, max_digits=10)
+    totaal = models.DecimalField(default=0, decimal_places=2, max_digits=10)
+    betaling = models.CharField(max_length=50)
+    producten = models.ManyToManyField(Product, through=BestellingProduct, blank=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='ordered')

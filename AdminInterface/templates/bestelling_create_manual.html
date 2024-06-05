@@ -1,0 +1,261 @@
+{% extends "base.html" %}
+{% load form_tags %}
+
+{% block content %}
+<div class="content-wrapper">
+    <section class="content-header">
+        <h1>Bestelling Aanmaken</h1>
+    </section>
+    <section class="content">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Nieuwe Bestelling</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <div class="row">
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="klant_naam">Klant Naam:</label>
+                                        {{ form.klant_naam|add_class:"form-control" }}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="klant_bedrijf">Bedrijf Naam:</label>
+                                        {{ form.klant_bedrijf|add_class:"form-control" }}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="email">Email:</label>
+                                        {{ form.email|add_class:"form-control" }}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="telefoon">Telefoon:</label>
+                                        {{ form.telefoon|add_class:"form-control" }}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="facturatieadres">Facturatieadres:</label>
+                                        {{ form.facturatieadres|add_class:"form-control" }}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="afleveradres">Afleveradres:</label>
+                                        {{ form.afleveradres|add_class:"form-control" }}
+                                    </div>
+                                </div>
+                                <div class="col-md-6">
+                                    <div class="form-group">
+                                        <label for="besteldatum">Besteldatum:</label>
+                                        {{ form.besteldatum|add_class:"form-control" }}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="voorschot">Voorschot:</label>
+                                        {{ form.voorschot|add_class:"form-control" }}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="totaal">Totaal:</label>
+                                        {{ form.totaal|add_class:"form-control" }}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="betaling">Betaling:</label>
+                                        {{ form.betaling|add_class:"form-control" }}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="status">Status:</label>
+                                        <div class="custom-select-wrapper">
+                                            <div class="custom-select">
+                                                <div class="custom-select-trigger">
+                                                    <span>Kies een status</span>
+                                                    <div class="arrow"></div>
+                                                </div>
+                                                <div class="custom-options">
+                                                    <span class="custom-option" data-value="ordered">
+                                                        <i class="fas fa-box" style="padding-right: 5px;"></i> Product besteld bij de fabrikant
+                                                    </span>
+                                                    <span class="custom-option" data-value="arrived">
+                                                        <i class="fas fa-warehouse" style="padding-right: 5px;"></i> Product aangekomen in het magazijn
+                                                    </span>
+                                                    <span class="custom-option" data-value="ready_for_delivery">
+                                                        <i class="fas fa-truck-loading" style="padding-right: 5px;"></i> Product aangemeld voor levering
+                                                    </span>
+                                                    <span class="custom-option" data-value="shipped">
+                                                        <i class="fas fa-shipping-fast" style="padding-right: 5px;"></i> Product verstuurd
+                                                    </span>
+                                                </div>
+                                            </div>
+                                            <select name="status" class="hidden-select">
+                                                <option value="ordered">Product besteld bij de fabrikant</option>
+                                                <option value="arrived">Product aangekomen in het magazijn</option>
+                                                <option value="ready_for_delivery">Product aangemeld voor levering</option>
+                                                <option value="shipped">Product verstuurd</option>
+                                            </select>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                            <h3>Producten</h3>
+                            <table class="table">
+                                <thead>
+                                    <tr>
+                                        <th>Product</th>
+                                        <th>Omschrijving</th>
+                                        <th>Hoeveelheid</th>
+                                        <th>Eenheidsprijs</th>
+                                        <th>Belastingen</th>
+                                        <th>Subtotaal</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for form in formset %}
+                                        <tr>
+                                            <td>{{ form.product }}</td>
+                                            <td>{{ form.omschrijving }}</td>
+                                            <td>{{ form.hoeveelheid }}</td>
+                                            <td>{{ form.eenheidsprijs }}</td>
+                                            <td>{{ form.belastingen }}</td>
+                                            <td>
+                                                {{ form.hoeveelheid.value|floatformat:2 }} * {{ form.eenheidsprijs.value|floatformat:2 }} = 
+                                                {{ form.hoeveelheid.value|floatformat:2|default_if_none:0|floatmul:form.eenheidsprijs.value|floatformat:2 }}
+                                            </td>
+                                        </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
+                            <button type="submit" class="btn btn-primary">Bestelling Opslaan</button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
+
+<style>
+    .hidden-select {
+        display: none;
+    }
+
+    .custom-select-wrapper {
+        position: relative;
+        display: inline-block;
+        user-select: none;
+        width: 100%;
+    }
+
+    .custom-select {
+        position: relative;
+        display: block;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        cursor: pointer;
+        width: 100%;
+    }
+
+    .custom-select-trigger {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        font-size: 16px;
+    }
+
+    .custom-select-trigger span {
+        display: flex;
+        align-items: center;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+
+    .custom-options {
+        position: absolute;
+        display: none;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 5px;
+        width: 100%;
+        z-index: 2;
+        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    }
+
+    .custom-option {
+        display: flex;
+        align-items: center;
+        padding: 10px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+
+    .custom-option:hover {
+        background-color: #f5f5f5;
+    }
+
+    .custom-option i {
+        padding-right: 5px;
+    }
+
+    .arrow {
+        width: 10px;
+        height: 10px;
+        border-left: 2px solid #333;
+        border-bottom: 2px solid #333;
+        transform: rotate(45deg);
+    }
+
+    .custom-select.open .custom-options {
+        display: block;
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        const customSelectWrapper = document.querySelector('.custom-select-wrapper');
+        const customSelect = document.querySelector('.custom-select');
+        const customSelectTrigger = document.querySelector('.custom-select-trigger');
+        const customOptions = document.querySelector('.custom-options');
+        const hiddenSelect = document.querySelector('.hidden-select');
+
+        customSelectTrigger.addEventListener('click', function() {
+            customSelect.classList.toggle('open');
+        });
+
+        document.querySelectorAll('.custom-option').forEach(option => {
+            option.addEventListener('click', function() {
+                const icon = this.querySelector('i').outerHTML;
+                const text = this.textContent.trim();
+                customSelectTrigger.querySelector('span').innerHTML = icon + text;
+                hiddenSelect.value = this.getAttribute('data-value');
+                customSelect.classList.remove('open');
+            });
+        });
+
+        document.addEventListener('click', function(event) {
+            if (!customSelectWrapper.contains(event.target)) {
+                customSelect.classList.remove('open');
+            }
+        });
+
+        // Product autocomplete
+        $('input[name="product"]').autocomplete({
+            source: function(request, response) {
+                $.ajax({
+                    url: "{% url 'product_autocomplete' %}",  // Zorg ervoor dat dit verwijst naar de juiste URL naam
+                    data: {
+                        term: request.term
+                    },
+                    success: function(data) {
+                        response(data);
+                    }
+                });
+            },
+            minLength: 2,
+            select: function(event, ui) {
+                $(this).val(ui.item.value);
+                // Optionally, you can trigger a change event to update other fields
+                $(this).trigger('change');
+                return false;
+            }
+        });
+    });
+</script>
+{% endblock %}
