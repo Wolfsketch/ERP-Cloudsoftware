@@ -6,19 +6,22 @@ class BestellingForm(forms.ModelForm):
         model = Bestelling
         fields = ['klant_naam', 'klant_bedrijf', 'email', 'telefoon', 'facturatieadres', 'afleveradres', 'besteldatum', 'voorschot', 'totaal', 'betaling', 'status']
         widgets = {
-            'klant_naam': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Klant Naam'}),
-            'klant_bedrijf': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Bedrijf Naam'}),
+            'klant_naam': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Naam'}),
+            'klant_bedrijf': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Bedrijfnaam'}),
             'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
             'telefoon': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Telefoon'}),
             'facturatieadres': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Facturatieadres'}),
             'afleveradres': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Afleveradres'}),
             'besteldatum': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'voorschot': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Voorschot'}),
-            'totaal': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Totaal'}),
+            'voorschot': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '0.00 €'}),
+            'totaal': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '0.00 €'}),
             'betaling': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Betaling'}),
             'status': forms.Select(choices=Bestelling.STATUS_CHOICES, attrs={'class': 'form-control'}),
         }
-
+    initial = {
+        'voorschot': '',
+        'totaal': ''
+    }
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
