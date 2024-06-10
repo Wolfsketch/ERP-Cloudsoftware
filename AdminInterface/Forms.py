@@ -1,27 +1,35 @@
+"""
+forms.py: Dit maakt het mogelijk om formulieren te genereren op basis van de modellen. Het zorgt ervoor dat de invoer van de gebruiker wordt gevalideerd en opgeslagen in de juiste modelvelden.
+
+STAP 2 MAAK EEN FORMULIER AAN (VOOR HET WEERGEVEN VAN DE PAGINA)
+"""
+
+
 from django import forms
 from .models import Bestelling, BestellingProduct, Product
 
-class BestellingForm(forms.ModelForm):
+class CombinedBestellingForm(forms.Form):
+    klant_voornaam = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Voornaam', 'style': 'border-width: 0 0 1px 0; border-radius: 0;'}))
+    klant_achternaam = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Achternaam', 'style': 'border-width: 0 0 1px 0; border-radius: 0;'}))
+    klant_bedrijf = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Bedrijf', 'style': 'border-width: 0 0 1px 0; border-radius: 0;'}))
+    klant_facturatieadres = forms.CharField(max_length=250, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Facturatieadres', 'style': 'border-width: 0 0 1px 0; border-radius: 0;'}))
+    klant_adres = forms.CharField(max_length=250, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Afleveradres', 'style': 'border-width: 0 0 1px 0; border-radius: 0;'}))
+    klant_telefoonnummer = forms.CharField(max_length=18, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Telefoonnummer', 'style': 'border-width: 0 0 1px 0; border-radius: 0;'}))
+    klant_email = forms.EmailField(max_length=100, widget=forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email', 'style': 'border-width: 0 0 1px 0; border-radius: 0;'}))
+
+    besteldatum = forms.DateField(widget=forms.DateInput(attrs={'class': 'form-control', 'type': 'date', 'style': 'border-width: 0 0 1px 0; border-radius: 0;'}))
+    voorschot = forms.DecimalField(max_digits=10, decimal_places=2, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00 €', 'style': 'border-width: 0 0 1px 0; border-radius: 0;'}))
+    totaal = forms.DecimalField(max_digits=10, decimal_places=2, required=False, widget=forms.NumberInput(attrs={'class': 'form-control', 'placeholder': '0.00 €', 'style': 'border-width: 0 0 1px 0; border-radius: 0;'}))
+    betaling = forms.CharField(max_length=50, widget=forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Betaling', 'style': 'border-width: 0 0 1px 0; border-radius: 0;'}))
+    status = forms.ChoiceField(choices=Bestelling.STATUS_CHOICES, widget=forms.Select(attrs={'class': 'form-control', 'style': 'border-width: 0 0 1px 0; border-radius: 0;'}))
+
     class Meta:
         model = Bestelling
-        fields = ['klant_naam', 'klant_bedrijf', 'email', 'telefoon', 'facturatieadres', 'afleveradres', 'besteldatum', 'voorschot', 'totaal', 'betaling', 'status']
-        widgets = {
-            'klant_naam': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Naam'}),
-            'klant_bedrijf': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Bedrijfnaam'}),
-            'email': forms.EmailInput(attrs={'class': 'form-control', 'placeholder': 'Email'}),
-            'telefoon': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Telefoon'}),
-            'facturatieadres': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Facturatieadres'}),
-            'afleveradres': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Afleveradres'}),
-            'besteldatum': forms.DateInput(attrs={'class': 'form-control', 'type': 'date'}),
-            'voorschot': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '0.00 €'}),
-            'totaal': forms.TextInput(attrs={'class': 'form-control', 'placeholder': '0.00 €'}),
-            'betaling': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Betaling'}),
-            'status': forms.Select(choices=Bestelling.STATUS_CHOICES, attrs={'class': 'form-control'}),
-        }
-    initial = {
-        'voorschot': '',
-        'totaal': ''
-    }
+        fields = [
+            'klant_voornaam', 'klant_achternaam', 'klant_bedrijf', 'klant_facturatieadres', 'klant_adres', 'klant_telefoonnummer', 'klant_email',
+            'besteldatum', 'voorschot', 'totaal', 'betaling', 'status'
+        ]
+
 class ProductForm(forms.ModelForm):
     class Meta:
         model = Product
@@ -42,11 +50,11 @@ class BestellingProductForm(forms.ModelForm):
         model = BestellingProduct
         fields = ['product', 'omschrijving', 'hoeveelheid', 'eenheidsprijs', 'belastingen']
         widgets = {
-            'product': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Begin met typen om een product te zoeken...'}),
-            'omschrijving': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Omschrijving'}),
-            'hoeveelheid': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Hoeveelheid'}),
-            'eenheidsprijs': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Eenheidsprijs'}),
-            'belastingen': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Belastingen'}),
+            'product': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Begin met typen om een product te zoeken...', 'style': 'border-width: 0 0 1px 0; border-radius: 0;'}),
+            'omschrijving': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Omschrijving', 'style': 'border-width: 0 0 1px 0; border-radius: 0;'}),
+            'hoeveelheid': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Hoeveelheid', 'style': 'border-width: 0 0 1px 0; border-radius: 0;'}),
+            'eenheidsprijs': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Eenheidsprijs', 'style': 'border-width: 0 0 1px 0; border-radius: 0;'}),
+            'belastingen': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Belastingen', 'style': 'border-width: 0 0 1px 0; border-radius: 0;'}),
         }
 
 BestellingProductFormSet = forms.inlineformset_factory(
@@ -56,10 +64,10 @@ BestellingProductFormSet = forms.inlineformset_factory(
     extra=1,
     can_delete=True,
     widgets={
-        'product': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Begin met typen om een product te zoeken...'}),
-        'omschrijving': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Omschrijving'}),
-        'hoeveelheid': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Hoeveelheid'}),
-        'eenheidsprijs': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Eenheidsprijs'}),
-        'belastingen': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Belastingen'}),
+        'product': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Begin met typen om een product te zoeken...', 'style': 'border-width: 0 0 1px 0; border-radius: 0;'}),
+        'omschrijving': forms.TextInput(attrs={'class': 'form-control', 'placeholder': 'Omschrijving', 'style': 'border-width: 0 0 1px 0; border-radius: 0;'}),
+        'hoeveelheid': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Hoeveelheid', 'style': 'border-width: 0 0 1px 0; border-radius: 0;'}),
+        'eenheidsprijs': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Eenheidsprijs', 'style': 'border-width: 0 0 1px 0; border-radius: 0;'}),
+        'belastingen': forms.NumberInput(attrs={'class': 'form-control', 'placeholder': 'Belastingen', 'style': 'border-width: 0 0 1px 0; border-radius: 0;'}),
     }
 )

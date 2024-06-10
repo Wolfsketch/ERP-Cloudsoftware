@@ -13,10 +13,10 @@
             <div class="col-12">
                 <div class="card">
                     <div class="card-header">
-                        <h3 class="card-title">Bestellingen Lijst</h3>
+                        <h3 class="card-title">Overzicht van Bestellingen</h3>
                     </div>
-                    <div class="card-body table-responsive p-0">
-                        <table class="table table-bordered table-striped">
+                    <div class="card-body">
+                        <table class="table table-bordered">
                             <thead>
                                 <tr>
                                     <th>#</th>
@@ -37,29 +37,40 @@
                                 {% for bestelling in bestellingen %}
                                 <tr>
                                     <td data-label="#">{{ bestelling.id }}</td>
-                                    <td data-label="Klantnaam">{{ bestelling.Klant }}</td>
-                                    <td data-label="Product(en)">{{ bestelling.Product }}</td>
-                                    <td data-label="Hoeveelheid">{{ bestelling.Hoeveelheid }}</td>
-                                    <td data-label="Telefoonnummer">{{ bestelling.Telefoonnummer }}</td>
-                                    <td data-label="Status">{{ bestelling.Status|yesno:"Ja, Nee" }}</td>
-                                    <td data-label="Voorschot">{{ bestelling.Voorschot }}</td>
-                                    <td data-label="Betaling">{{ bestelling.Betaling }}</td>
-                                    <td data-label="Totaal">{{ bestelling.Totaal }}</td>
-                                    <td data-label="Besteldatum">{{ bestelling.Besteldatum }}</td>
-                                    <td data-label="Gewijzigde datum">{{ bestelling.Gewijzigde_datum }}</td>
+                                    <td data-label="Klantnaam">{{ bestelling.klant.Voornaam }} {{ bestelling.klant.Achternaam }}</td>
+                                    <td data-label="Product(en)">
+                                        {% for bp in bestelling.bestellingproduct_set.all %}
+                                            {{ bp.product.naam }}{% if not forloop.last %}, {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td data-label="Hoeveelheid">
+                                        {% for bp in bestelling.bestellingproduct_set.all %}
+                                            {{ bp.hoeveelheid }}{% if not forloop.last %}, {% endif %}
+                                        {% endfor %}
+                                    </td>
+                                    <td data-label="Telefoonnummer">{{ bestelling.klant.Telefoonnummer }}</td>
+                                    <td data-label="Status">{{ bestelling.get_status_display }}</td>
+                                    <td data-label="Voorschot">{{ bestelling.voorschot }}</td>
+                                    <td data-label="Betaling">{{ bestelling.betaling }}</td>
+                                    <td data-label="Totaal">{{ bestelling.totaal }}</td>
+                                    <td data-label="Besteldatum">{{ bestelling.besteldatum }}</td>
+                                    <td data-label="Gewijzigde datum">{{ bestelling.updated_at }}</td>
                                     <td data-label="Acties">
-                                        <a href="{% url 'bestelling_detail' bestelling.id %}" class="btn btn-info btn-sm"><i class="fas fa-eye"></i></a>
-                                        <a href="{% url 'bestelling_bewerk' bestelling.id %}" class="btn btn-primary btn-sm"><i class="fas fa-edit"></i></a>
-                                        <form action="{% url 'bestelling_verwijder' bestelling.id %}" method="post" style="display:inline;">
-                                            {% csrf_token %}
-                                            <button type="submit" class="btn btn-danger btn-sm"><i class="fas fa-trash"></i></button>
-                                        </form>
-                                        <a href="{% url 'bestelling_mail' bestelling.id %}" class="btn btn-success btn-sm"><i class="fas fa-envelope"></i></a>
+                                        <a href="{% url 'bestelling_detail' bestelling.id %}">Details</a>
+                                        <a href="{% url 'bestelling_bewerk' bestelling.id %}">Bewerken</a>
+                                        <a href="{% url 'bestelling_verwijder' bestelling.id %}">Verwijderen</a>
                                     </td>
                                 </tr>
                                 {% endfor %}
                             </tbody>
                         </table>
+
+                        <h3>Debug informatie</h3>
+                        <ul>
+                            {% for bestelling in bestellingen %}
+                                <li>Bestelling ID: {{ bestelling.id }}, Klant: {{ bestelling.klant.Voornaam }} {{ bestelling.klant.Achternaam }}, Totaal: {{ bestelling.totaal }}</li>
+                            {% endfor %}
+                        </ul>
                     </div>
                 </div>
             </div>

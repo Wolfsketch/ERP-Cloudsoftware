@@ -1,3 +1,9 @@
+"""
+models.py: Dit definieert de database-structuur, oftewel de modellen die worden gebruikt om de gegevens op te slaan. Dit is essentieel voor het opzetten van de database tabellen.
+
+STAP 1 MAAK EEN DATABASE MODEL AAN (VOOR HET OPSLAAN VAN GEGEVENS)
+"""
+
 from django.db import models
 import datetime
 
@@ -52,16 +58,14 @@ class Bestelling(models.Model):
         ('shipped', 'Product verstuurd'),
     ]
 
-    klant_naam = models.CharField(max_length=100, blank=True, null=True, default='')
-    klant_bedrijf = models.CharField(max_length=100, blank=True, null=True, default='')
-    email = models.EmailField(max_length=100, default='', blank=True)
-    telefoon = models.CharField(max_length=18, default='', blank=True)
-    facturatieadres = models.CharField(max_length=250, default='', blank=True)
-    afleveradres = models.CharField(max_length=250, default='', blank=True)
+    klant = models.ForeignKey(Klant, on_delete=models.CASCADE)
     besteldatum = models.DateField(default=datetime.datetime.today)
-    voorschot = models.DecimalField(decimal_places=2, max_digits=10, blank=True, null=True)
-    totaal = models.DecimalField(decimal_places=2, max_digits=10, blank=True, null=True)
+    voorschot = models.DecimalField(default=0, decimal_places=2, max_digits=10)
+    totaal = models.DecimalField(default=0, decimal_places=2, max_digits=10, blank=True, null=True)
     betaling = models.CharField(max_length=50, default='', blank=True)
-    producten = models.ManyToManyField(Product, through=BestellingProduct, blank=True)
+    producten = models.ManyToManyField(Product, through='BestellingProduct', blank=True)
     status = models.CharField(max_length=20, choices=STATUS_CHOICES, default='ordered')
     adres = models.CharField(max_length=250, default='', blank=True)
+
+    def __str__(self):
+        return f'Bestelling {self.id} voor {self.klant}'

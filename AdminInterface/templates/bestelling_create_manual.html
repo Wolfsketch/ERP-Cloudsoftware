@@ -8,7 +8,7 @@
     </section>
     <section class="content">
         <div class="row">
-            <div class="col-12">
+            <div class="col-8">
                 <div class="card">
                     <div class="card-header">
                         <h3 class="card-title">Nieuwe Bestelling</h3>
@@ -19,56 +19,55 @@
                             <div class="row">
                                 <div class="col-md-6">
                                     <div class="form-group">
-                                        <label for="klant_naam">Klant Naam:</label>
-                                        {{ form.klant_naam }}
+                                        <label for="klant_voornaam">Klant Voornaam:</label>
+                                        {{ combined_form.klant_voornaam|add_class:"form-control" }}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="klant_achternaam">Klant Achternaam:</label>
+                                        {{ combined_form.klant_achternaam|add_class:"form-control" }}
                                     </div>
                                     <div class="form-group">
                                         <label for="klant_bedrijf">Bedrijfnaam:</label>
-                                        {{ form.klant_bedrijf }}
+                                        {{ combined_form.klant_bedrijf|add_class:"form-control" }}
                                     </div>
                                     <div class="form-group">
-                                        <label for="email">Email:</label>
-                                        {{ form.email }}
+                                        <label for="klant_email">Email:</label>
+                                        {{ combined_form.klant_email|add_class:"form-control" }}
                                     </div>
                                     <div class="form-group">
-                                        <label for="telefoon">Telefoon:</label>
-                                        {{ form.telefoon }}
+                                        <label for="klant_telefoonnummer">Telefoon:</label>
+                                        {{ combined_form.klant_telefoonnummer|add_class:"form-control" }}
                                     </div>
                                     <div class="form-group">
-                                        <label for="facturatieadres">Facturatieadres:</label>
-                                        {{ form.facturatieadres }}
+                                        <label for="klant_facturatieadres">Facturatieadres:</label>
+                                        {{ combined_form.klant_facturatieadres|add_class:"form-control" }}
                                     </div>
                                     <div class="form-group">
-                                        <label for="afleveradres">Afleveradres:</label>
-                                        {{ form.afleveradres }}
+                                        <label for="klant_adres">Afleveradres:</label>
+                                        {{ combined_form.klant_adres|add_class:"form-control" }}
                                     </div>
                                 </div>
                                 <div class="col-md-6">
                                     <div class="form-group">
                                         <label for="besteldatum">Besteldatum:</label>
-                                        {{ form.besteldatum }}
+                                        {{ combined_form.besteldatum|add_class:"form-control" }}
                                     </div>
                                     <div class="form-group">
                                         <label for="voorschot">Voorschot:</label>
-                                        {{ form.voorschot|add_class:"form-control" }}
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="totaal">Totaal:</label>
-                                        {{ form.totaal|add_class:"form-control" }}
+                                        {{ combined_form.voorschot|add_class:"form-control" }}
                                     </div>
                                     <div class="form-group">
                                         <label for="betaling">Betaling:</label>
-                                        {{ form.betaling }}
+                                        {{ combined_form.betaling|add_class:"form-control" }}
+                                    </div>
+                                    <div class="form-group">
+                                        <label for="totaal">Totaal:</label>
+                                        <div id="totaal-boven" class="form-control-static">0.00 €</div>
+                                        {{ combined_form.totaal.as_hidden }}
                                     </div>
                                     <div class="form-group">
                                         <label for="status">Status:</label>
-                                        <select id="status-dropdown" name="status" class="form-control">
-                                            <option value="" disabled selected>Kies een status</option>
-                                            <option value="ordered" data-icon="fas fa-box">&#xf0c4; Product besteld bij de fabrikant</option>
-                                            <option value="arrived" data-icon="fas fa-warehouse">&#xf494; Product aangekomen in het magazijn</option>
-                                            <option value="ready_for_delivery" data-icon="fas fa-truck-loading">&#xf0d1; Product aangemeld voor levering</option>
-                                            <option value="shipped" data-icon="fas fa-shipping-fast">&#xf0d1; Product verstuurd</option>
-                                        </select>
+                                        {{ combined_form.status|add_class:"form-control" }}
                                     </div>              
                                 </div>
                             </div>
@@ -81,7 +80,7 @@
                                         <th>Hoeveelheid</th>
                                         <th>Eenheidsprijs</th>
                                         <th>Belastingen</th>
-                                        <th>Subtotaal</th>
+                                        <th>Totaal</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -92,9 +91,8 @@
                                             <td>{{ form.hoeveelheid }}</td>
                                             <td>{{ form.eenheidsprijs }}</td>
                                             <td>{{ form.belastingen }}</td>
-                                            <td>
-                                                {{ form.hoeveelheid.value|floatformat:2 }} * {{ form.eenheidsprijs.value|floatformat:2 }} = 
-                                                {{ form.hoeveelheid.value|floatformat:2|default_if_none:0|floatmul:form.eenheidsprijs.value|floatformat:2 }}
+                                            <td class="subtotaal-cell text-right">
+                                                0.00 €
                                             </td>
                                         </tr>
                                     {% endfor %}
@@ -119,177 +117,114 @@
 {% endblock %}
 
 <style>
-    .hidden-select {
-        display: none;
-    }
-    
-    .custom-select-wrapper {
-        position: relative;
-        display: inline-block;
-        user-select: none;
-        width: 100%;
-    }
-    
-    .custom-select {
-        position: relative;
-        display: block;
-        background-color: #fff;
-        border: 1px solid #ccc;
-        border-radius: 2px; /* Minder rond */
-        cursor: pointer;
-        width: 100%;
-    }
-    
-    .custom-select-trigger {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        font-size: 16px;
-        padding: 5px; /* Kleinere padding */
-    }
-    
-    .custom-select-trigger span {
-        display: flex;
-        align-items: center;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-    }
-    
-    .custom-options {
-        position: absolute;
-        display: none;
-        background-color: #fff;
-        border: 1px solid #ccc;
-        border-radius: 2px; /* Minder rond */
-        width: 100%;
-        z-index: 2;
-        box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
-    }
-    
-    .custom-option {
-        display: flex;
-        align-items: center;
-        padding: 5px; /* Kleinere padding */
-        font-size: 16px;
-        cursor: pointer;
-    }
-    
-    .custom-option:hover {
-        background-color: #f5f5f5;
-    }
-    
-    .custom-option i {
-        padding-right: 5px;
-    }
-    
-    .arrow {
-        width: 10px;
-        height: 10px;
-        border-left: 2px solid #333;
-        border-bottom: 2px solid #333;
-        transform: rotate(45deg);
-    }
-    
-    .custom-select.open .custom-options {
-        display: block;
-    }
-    
-    .row.totals-row {
-        display: flex;
-        justify-content: flex-end;
-        margin-top: 20px;
-    }
-    
-    .totals-row p {
-        margin: 5px 0;
-        font-size: 16px;
-    }
-    
-    .totals-row span {
-        font-weight: bold;
-    }
-    
-    select.form-control, input.form-control {
-        font-family: 'Arial';
-        font-size: 14px; /* Kleinere tekstgrootte */
-        padding: 5px; /* Kleinere padding */
-        height: auto; /* Auto hoogte */
-        border-radius: 2px; /* Minder rond */
-    }
-    
-    select.form-control option, input.form-control {
-        font-family: 'Arial';
-        font-size: 14px; /* Kleinere tekstgrootte */
-        padding: 5px; /* Kleinere padding */
-    }
-    
-    .smaller-input {
-        height: 30px; /* Kleinere hoogte */
-        padding: 2px 5px; /* Kleinere padding */
-        font-size: 12px; /* Kleinere tekstgrootte */
-        border-radius: 2px; /* Minder rond */
-    }
-    .form-control {
-        border-width: 0 0 1px 0; !important
-        border-radius: 0; !important
-    }
-    
+.hidden-select {
+    display: none;
+}
+
+.custom-select-wrapper {
+    position: relative;
+    display: inline-block;
+    user-select: none;
+    width: 100%;
+}
+
+.custom-select {
+    position: relative;
+    display: block;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    cursor: pointer;
+    width: 100%;
+}
+
+.custom-select-trigger {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    font-size: 16px;
+    padding: 10px;
+}
+
+.custom-select-trigger span {
+    display: flex;
+    align-items: center;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
+.custom-options {
+    position: absolute;
+    display: none;
+    background-color: #fff;
+    border: 1px solid #ccc;
+    border-radius: 5px;
+    width: 100%;
+    z-index: 2;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+}
+
+.custom-option {
+    display: flex;
+    align-items: center;
+    padding: 10px;
+    font-size: 16px;
+    cursor: pointer;
+}
+
+.custom-option:hover {
+    background-color: #f5f5f5;
+}
+
+.custom-option i {
+    padding-right: 5px;
+}
+
+.arrow {
+    width: 10px;
+    height: 10px;
+    border-left: 2px solid #333;
+    border-bottom: 2px solid #333;
+    transform: rotate(45deg);
+}
+
+.custom-select.open .custom-options {
+    display: block;
+}
+
+.row.totals-row {
+    display: flex;
+    justify-content: flex-end;
+    margin-top: 20px;
+}
+
+.totals-row p {
+    margin: 5px 0;
+    font-size: 16px;
+}
+
+.totals-row span {
+    font-weight: bold;
+}
+
+select.form-control {
+    font-family: 'FontAwesome', 'Arial';
+}
+
+select.form-control option {
+    font-family: 'FontAwesome', 'Arial';
+}
+
+input[readonly] {
+    background-color: #e9ecef;
+    opacity: 1;
+}
 </style>
 
 <script>
+    
     document.addEventListener('DOMContentLoaded', function() {
-        // Custom select functionality
-        const customSelectWrapper = document.querySelector('.custom-select-wrapper');
-        const customSelect = document.querySelector('.custom-select');
-        const customSelectTrigger = document.querySelector('.custom-select-trigger');
-        const customOptions = document.querySelector('.custom-options');
-        const hiddenSelect = document.querySelector('.hidden-select');
-    
-        if (customSelectTrigger) {
-            customSelectTrigger.addEventListener('click', function() {
-                customSelect.classList.toggle('open');
-            });
-    
-            document.querySelectorAll('.custom-option').forEach(option => {
-                option.addEventListener('click', function() {
-                    const icon = this.querySelector('i').outerHTML;
-                    const text = this.textContent.trim();
-                    customSelectTrigger.querySelector('span').innerHTML = icon + text;
-                    hiddenSelect.value = this.getAttribute('data-value');
-                    customSelect.classList.remove('open');
-                });
-            });
-    
-            document.addEventListener('click', function(event) {
-                if (!customSelectWrapper.contains(event.target)) {
-                    customSelect.classList.remove('open');
-                }
-            });
-        }
-    
-        // Product autocomplete
-        $('input[name="product"]').autocomplete({
-            source: function(request, response) {
-                $.ajax({
-                    url: "{% url 'product_autocomplete' %}",
-                    data: {
-                        term: request.term
-                    },
-                    success: function(data) {
-                        response(data);
-                    }
-                });
-            },
-            minLength: 2,
-            select: function(event, ui) {
-                $(this).val(ui.item.value);
-                // Optionally, you can trigger a change event to update other fields
-                $(this).trigger('change');
-                return false;
-            }
-        });
-    
         // Update the calculation part
         function updateTotals() {
             let nettoBedrag = 0;
@@ -314,6 +249,9 @@
             document.getElementById('btw').textContent = btw.toFixed(2) + ' €';
             document.getElementById('totaal').textContent = totaal.toFixed(2) + ' €';
             document.getElementById('nog-te-betalen').textContent = nogTeBetalen.toFixed(2) + ' €';
+    
+            // Update the hidden totaal field
+            document.querySelector('input[name="totaal"]').value = totaal.toFixed(2);
         }
     
         document.querySelectorAll('input').forEach(input => {
@@ -321,64 +259,6 @@
         });
     
         updateTotals();
-    
-        // Dropdown menu's initialiseren
-        const dropdown = document.querySelector('select[name="status"]');
-        
-        function formatDropdownIcons() {
-            for (let i = 0; i < dropdown.options.length; i++) {
-                const option = dropdown.options[i];
-                const iconClass = option.getAttribute('data-icon');
-                if (iconClass) {
-                    option.innerHTML = `<i class="${iconClass}"></i> ${option.textContent.trim()}`;
-                }
-            }
-        }
-    
-        // Bij het veranderen van de selectie
-        dropdown.addEventListener('change', function() {
-            const selectedOption = dropdown.options[dropdown.selectedIndex];
-            const iconClass = selectedOption.getAttribute('data-icon');
-            if (iconClass) {
-                selectedOption.innerHTML = `<i class="${iconClass}"></i> ${selectedOption.textContent.trim()}`;
-            }
-        });
-    
-        // Initialiseer de dropdown bij het laden van de pagina
-        formatDropdownIcons();
-    
-        // Set placeholders for "voorschot" and "totaal"
-        function setPlaceholders() {
-            const voorschotInput = document.querySelector('input[name="voorschot"]');
-            const totaalInput = document.querySelector('input[name="totaal"]');
-    
-            if (voorschotInput) {
-                voorschotInput.value = '';
-                voorschotInput.setAttribute('placeholder', '0.00 €');
-            }
-    
-            if (totaalInput) {
-                totaalInput.value = '';
-                totaalInput.setAttribute('placeholder', '0.00 €');
-            }
-        }
-    
-        // Call setPlaceholders function
-        setPlaceholders();
-    
-        // Add validation for non-numeric values
-        function validateNumberInput(event) {
-            const value = event.target.value;
-            if (isNaN(value)) {
-                event.target.style.borderColor = 'red';
-            } else {
-                event.target.style.borderColor = '';
-            }
-        }
-    
-        document.querySelector('input[name="voorschot"]').addEventListener('input', validateNumberInput);
-        document.querySelector('input[name="totaal"]').addEventListener('input', validateNumberInput);
-    
     });
     
 </script>
