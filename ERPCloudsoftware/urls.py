@@ -19,12 +19,14 @@ urlpatterns = [
     path('producten/', views.product_list, name='product_list'),
     path('product-autocomplete/', views.product_autocomplete, name='product_autocomplete'),  # Zorg ervoor dat deze regel bestaat
 
+    # Voeg hier de nieuwe URL-patronen toe
+    path('simple-test/', views.simple_test_view, name='simple_test_view'),
+    path('simple-test-success/', views.simple_test_success, name='simple_test_success'),
 
     # Anders
     path('login/', auth_views.LoginView.as_view(template_name='login.html'), name='login'),
     path('logout/', auth_views.LogoutView.as_view(template_name='logout.html'), name='logout'),
     path('accounts/', include('allauth.urls')),  # Google Authentication Login
-
 ]
 
 if settings.DEBUG:

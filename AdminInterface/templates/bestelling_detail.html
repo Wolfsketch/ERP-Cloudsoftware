@@ -1,18 +1,62 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+
 {% block content %}
-<h2>Bestelling Detail</h2>
-<p>Klant: {{ bestelling.Klant }}</p>
-<p>Product: {{ bestelling.Product }}</p>
-<p>Hoeveelheid: {{ bestelling.Hoeveelheid }}</p>
-<p>Adres: {{ bestelling.Adres }}</p>
-<p>Telefoonnummer: {{ bestelling.Telefoonnummer }}</p>
-<p>Datum: {{ bestelling.Datum }}</p>
-<p>Status: {{ bestelling.Status|yesno:"Ja, Nee" }}</p>
-<p>Betaling: {{ bestelling.Betaling }}</p>
-<p>Totaal: {{ bestelling.Totaal }}</p>
-<p>Voorschot: {{ bestelling.Voorschot }}</p>
-<p>Besteldatum: {{ bestelling.Besteldatum }}</p>
-<p>Gewijzigde datum: {{ bestelling.Gewijzigde_datum }}</p>
-<a href="{% url 'bestelling_bewerken' bestelling.pk %}">Bewerken</a>
-<a href="{% url 'bestelling_verwijderen' bestelling.pk %}">Verwijderen</a>
+<div class="content-wrapper">
+    <section class="content-header">
+        <h1>Bestelling Details</h1>
+    </section>
+    <section class="content">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Details van Bestelling #{{ bestelling.id }}</h3>
+                    </div>
+                    <div class="card-body">
+                        <dl class="row">
+                            <dt class="col-sm-3">Klantnaam</dt>
+                            <dd class="col-sm-9">{{ bestelling.klant.voornaam }} {{ bestelling.klant.achternaam }}</dd>
+
+                            <dt class="col-sm-3">Telefoonnummer</dt>
+                            <dd class="col-sm-9">{{ bestelling.klant.telefoonnummer }}</dd>
+
+                            <dt class="col-sm-3">Email</dt>
+                            <dd class="col-sm-9">{{ bestelling.klant.email }}</dd>
+
+                            <dt class="col-sm-3">Product(en)</dt>
+                            <dd class="col-sm-9">
+                                {% for bp in bestelling.bestellingproduct_set.all %}
+                                    {{ bp.product.naam }} ({{ bp.hoeveelheid }} x {{ bp.eenheidsprijs }})<br>
+                                {% endfor %}
+                            </dd>
+
+                            <dt class="col-sm-3">Status</dt>
+                            <dd class="col-sm-9">{{ bestelling.get_status_display }}</dd>
+
+                            <dt class="col-sm-3">Voorschot</dt>
+                            <dd class="col-sm-9">{{ bestelling.voorschot }}</dd>
+
+                            <dt class="col-sm-3">Betaling</dt>
+                            <dd class="col-sm-9">{{ bestelling.betaling }}</dd>
+
+                            <dt class="col-sm-3">Totaal</dt>
+                            <dd class="col-sm-9">{{ bestelling.totaal }}</dd>
+
+                            <dt class="col-sm-3">Besteldatum</dt>
+                            <dd class="col-sm-9">{{ bestelling.besteldatum }}</dd>
+
+                            <dt class="col-sm-3">Gewijzigde datum</dt>
+                            <dd class="col-sm-9">{{ bestelling.updated_at }}</dd>
+                        </dl>
+                        <a href="{% url 'bestelling_bewerk' bestelling.id %}" class="btn btn-primary">Bewerken</a>
+                        <a href="{% url 'bestelling_verwijder' bestelling.id %}" class="btn btn-danger">Verwijderen</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
 {% endblock %}

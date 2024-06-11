@@ -1,16 +1,18 @@
-from django.shortcuts import render, get_object_or_404, redirect
-from .models import Bestelling, Product, BestellingProduct, Klant
-from .Forms import ProductForm, BestellingProductForm, CombinedBestellingForm, BestellingProductFormSet
+"""
+views.py: Dit maakt het mogelijk om de logica van de applicatie te definiëren. Het bevat de views die de gebruiker ziet en de acties die de gebruiker kan uitvoeren. Dit is de plek waar de gegevens worden opgehaald, verwerkt en weergegeven.
+
+STAP 3 MAAK EEN VIEW AAN (VOOR HET VERWERKEN VAN DE GEBRUIKERSINVOER)
+"""
+from django.shortcuts import render, redirect, get_object_or_404
+from .forms import KlantForm, BestellingForm, BestellingProductFormSet, ProductForm, SimpleTestForm
+from .models import Klant, Bestelling, BestellingProduct, Product
 from django.contrib.auth.decorators import login_required
-from django.forms import modelformset_factory
-from django.db.models import Q
-from django.db.models import Q
 from django.http import JsonResponse
+from django.db.models import Q
 import logging
 
 # Stel de logger in
 logger = logging.getLogger(__name__)
-logging.basicConfig(level=logging.DEBUG)
 
 @login_required
 def dashboard(request):
@@ -21,13 +23,15 @@ def bestellingen(request):
     bestellingen_lijst = Bestelling.objects.all()
     debug_info = []
     for bestelling in bestellingen_lijst:
-        debug_info.append(f"Bestelling ID: {bestelling.id}, Klant: {bestelling.klant.Voornaam} {bestelling.klant.Achternaam}, Totaal: {bestelling.totaal}")
+        debug_info.append(f"Bestelling ID: {bestelling.id}, Klant: {bestelling.klant.voornaam} {bestelling.klant.achternaam}, Totaal: {bestelling.totaal}")
     
     return render(request, 'bestellingen.html', {'bestellingen': bestellingen_lijst, 'debug_info': debug_info})
 
 @login_required
 def klanten(request):
-    return render(request, 'klanten.html')
+    klanten = Klant.objects.all()
+    return render(request, 'klanten.html', {'klanten': klanten})
+
 
 @login_required
 def bestelling_detail(request, pk):
@@ -38,13 +42,14 @@ def bestelling_detail(request, pk):
 def bestelling_bewerk(request, pk):
     bestelling = get_object_or_404(Bestelling, pk=pk)
     if request.method == 'POST':
-        combined_form = CombinedBestellingForm(request.POST, instance=bestelling)
-        if combined_form.is_valid():
-            combined_form.save()
+        form = BestellingForm(request.POST, instance=bestelling)
+        if form.is_valid():
+            form.save()
             return redirect('bestelling_detail', pk=bestelling.pk)
     else:
-        combined_form = CombinedBestellingForm(instance=bestelling)
-    return render(request, 'bestelling_bewerk.html', {'combined_form': combined_form})
+        form = BestellingForm(instance=bestelling)
+    return render(request, 'bestelling_bewerken.html', {'form': form, 'bestelling': bestelling})
+
 
 @login_required
 def bestelling_verwijder(request, pk):
@@ -52,7 +57,8 @@ def bestelling_verwijder(request, pk):
     if request.method == 'POST':
         bestelling.delete()
         return redirect('bestellingen')
-    return render(request, 'bestelling_verwijder.html', {'bestelling': bestelling})
+    return render(request, 'bestelling_verwijderen.html', {'bestelling': bestelling})
+
 
 @login_required
 def bestelling_mail(request, pk):
@@ -71,51 +77,20 @@ def create_product(request):
         form = ProductForm()
     return render(request, 'create_product.html', {'form': form})
 
+
 @login_required
 def bestelling_create_manual(request):
-    BestellingProductFormSet = modelformset_factory(BestellingProduct, form=BestellingProductForm, extra=1, can_delete=True)
-    
     if request.method == 'POST':
-        combined_form = CombinedBestellingForm(request.POST)
-        formset = BestellingProductFormSet(request.POST, queryset=BestellingProduct.objects.none())
+        klant_form = KlantForm(request.POST)
+        bestelling_form = BestellingForm(request.POST)
+        formset = BestellingProductFormSet(request.POST)
 
-        print(f"POST data: {request.POST}")
-        
-        if combined_form.is_valid() and formset.is_valid():
-            # Klant opslaan
-            klant_data = {
-                'Voornaam': combined_form.cleaned_data['klant_voornaam'],
-                'Achternaam': combined_form.cleaned_data['klant_achternaam'],
-                'Bedrijf': combined_form.cleaned_data['klant_bedrijf'],
-                'Facturatieadres': combined_form.cleaned_data['klant_facturatieadres'],
-                'Adres': combined_form.cleaned_data['klant_adres'],
-                'Telefoonnummer': combined_form.cleaned_data['klant_telefoonnummer'],
-                'Email': combined_form.cleaned_data['klant_email'],
-            }
-            print(f"Klant data: {klant_data}")
-            klant, created = Klant.objects.get_or_create(**klant_data)
+        if klant_form.is_valid() and bestelling_form.is_valid() and formset.is_valid():
+            klant = klant_form.save()
+            bestelling = bestelling_form.save(commit=False)
+            bestelling.klant = klant
+            bestelling.save()
 
-            # Bereken het totaalbedrag
-            totaal_bedrag = 0
-            for form in formset:
-                if form.cleaned_data:
-                    hoeveelheid = form.cleaned_data.get('hoeveelheid', 0)
-                    eenheidsprijs = form.cleaned_data.get('eenheidsprijs', 0)
-                    totaal_bedrag += hoeveelheid * eenheidsprijs
-
-            # Bestelling opslaan
-            bestelling_data = {
-                'klant': klant,
-                'besteldatum': combined_form.cleaned_data['besteldatum'],
-                'voorschot': combined_form.cleaned_data['voorschot'],
-                'totaal': totaal_bedrag,
-                'betaling': combined_form.cleaned_data['betaling'],
-                'status': combined_form.cleaned_data['status'],
-            }
-            print(f"Bestelling data: {bestelling_data}")
-            bestelling = Bestelling.objects.create(**bestelling_data)
-
-            # BestellingProduct opslaan
             for form in formset:
                 if form.cleaned_data:
                     bestelling_product = form.save(commit=False)
@@ -124,82 +99,19 @@ def bestelling_create_manual(request):
 
             return redirect('bestellingen')
         else:
-            print(f"Combined form errors: {combined_form.errors}")
-            print(f"Formset errors: {formset.errors}")
+            logger.debug('Klant form errors: %s', klant_form.errors)
+            logger.debug('Bestelling form errors: %s', bestelling_form.errors)
+            logger.debug('Formset errors: %s', formset.errors)
     else:
-        combined_form = CombinedBestellingForm()
+        klant_form = KlantForm()
+        bestelling_form = BestellingForm()
         formset = BestellingProductFormSet(queryset=BestellingProduct.objects.none())
 
-    return render(request, 'bestelling_create_manual.html', {'combined_form': combined_form, 'formset': formset})
-
-
-
-
-
-@login_required
-def bestelling_create_manual(request):
-    BestellingProductFormSet = modelformset_factory(BestellingProduct, form=BestellingProductForm, extra=1, can_delete=True)
-    
-    if request.method == 'POST':
-        combined_form = CombinedBestellingForm(request.POST)
-        formset = BestellingProductFormSet(request.POST, queryset=BestellingProduct.objects.none())
-        
-        if combined_form.is_valid() and formset.is_valid():
-            # Debug: Print combined_form cleaned data
-            print("Combined form is valid. Cleaned data:", combined_form.cleaned_data)
-            
-            # Klant opslaan
-            klant_data = {
-                'Voornaam': combined_form.cleaned_data['klant_voornaam'],
-                'Achternaam': combined_form.cleaned_data['klant_achternaam'],
-                'Bedrijf': combined_form.cleaned_data['klant_bedrijf'],
-                'Facturatieadres': combined_form.cleaned_data['klant_facturatieadres'],
-                'Adres': combined_form.cleaned_data['klant_adres'],
-                'Telefoonnummer': combined_form.cleaned_data['klant_telefoonnummer'],
-                'Email': combined_form.cleaned_data['klant_email'],
-            }
-            klant, created = Klant.objects.get_or_create(**klant_data)
-            print("Klant opgeslagen:", klant)
-            
-            # Bereken het totaalbedrag
-            totaal_bedrag = 0
-            for form in formset:
-                if form.cleaned_data:
-                    hoeveelheid = form.cleaned_data.get('hoeveelheid', 0)
-                    eenheidsprijs = form.cleaned_data.get('eenheidsprijs', 0)
-                    totaal_bedrag += hoeveelheid * eenheidsprijs
-            print("Totaal bedrag berekend:", totaal_bedrag)
-            
-            # Bestelling opslaan
-            bestelling_data = {
-                'klant': klant,
-                'besteldatum': combined_form.cleaned_data['besteldatum'],
-                'voorschot': combined_form.cleaned_data['voorschot'],
-                'totaal': totaal_bedrag,
-                'betaling': combined_form.cleaned_data['betaling'],
-                'status': combined_form.cleaned_data['status'],
-            }
-            bestelling = Bestelling.objects.create(**bestelling_data)
-            print("Bestelling opgeslagen:", bestelling)
-            
-            # BestellingProduct opslaan
-            for form in formset:
-                if form.cleaned_data:
-                    bestelling_product = form.save(commit=False)
-                    bestelling_product.bestelling = bestelling
-                    bestelling_product.save()
-                    print("BestellingProduct opgeslagen:", bestelling_product)
-
-            return redirect('bestellingen')
-        else:
-            # Debug: Print form errors if any form is invalid
-            print("Combined form errors:", combined_form.errors)
-            print("Formset errors:", formset.errors)
-    else:
-        combined_form = CombinedBestellingForm()
-        formset = BestellingProductFormSet(queryset=BestellingProduct.objects.none())
-
-    return render(request, 'bestelling_create_manual.html', {'combined_form': combined_form, 'formset': formset})
+    return render(request, 'bestelling_create_manual.html', {
+        'klant_form': klant_form,
+        'bestelling_form': bestelling_form,
+        'formset': formset
+    })
 
 
 
@@ -225,3 +137,16 @@ def product_autocomplete(request):
         return JsonResponse(products, safe=False)
     return JsonResponse([], safe=False)
     
+
+def simple_test_view(request):
+    if request.method == 'POST':
+        form = SimpleTestForm(request.POST)
+        if form.is_valid():
+            form.save()
+            return redirect('simple_test_success')
+    else:
+        form = SimpleTestForm()
+    return render(request, 'simple_test_form.html', {'form': form})
+
+def simple_test_success(request):
+    return render(request, 'simple_test_success.html')

@@ -1,9 +1,37 @@
-{% extends 'base.html' %}
+{% extends "base.html" %}
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+
 {% block content %}
-<h2>Weet u zeker dat u deze bestelling wilt verwijderen?</h2>
-<form method="post">
-    {% csrf_token %}
-    <button type="submit">Ja, verwijderen</button>
-    <a href="{% url 'bestelling_detail' bestelling.pk %}">Nee, annuleren</a>
-</form>
+<div class="content-wrapper">
+    <section class="content-header">
+        <h1>Bestelling Verwijderen</h1>
+    </section>
+    <section class="content">
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Weet je zeker dat je deze bestelling wilt verwijderen?</h3>
+                    </div>
+                    <div class="card-body">
+                        <form method="post">
+                            {% csrf_token %}
+                            <p>Bestelling: {{ bestelling.id }}</p>
+                            <p>Klantnaam: {{ bestelling.klant.voornaam }} {{ bestelling.klant.achternaam }}</p>
+                            <p>Product(en): 
+                                {% for bp in bestelling.bestellingproduct_set.all %}
+                                    {{ bp.product.naam }} ({{ bp.hoeveelheid }} x {{ bp.eenheidsprijs }})<br>
+                                {% endfor %}
+                            </p>
+                            <button type="submit" class="btn btn-danger">Verwijderen</button>
+                            <a href="{% url 'bestellingen' %}" class="btn btn-secondary">Annuleren</a>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
 {% endblock %}

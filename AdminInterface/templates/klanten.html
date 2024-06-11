@@ -1,11 +1,45 @@
 {% extends "base.html" %}
+{% load static %}
+
+<link rel="stylesheet" href="{% static 'css/responsive.css' %}">
+
 {% block content %}
 <div class="content-wrapper">
     <section class="content-header">
         <h1>Klanten</h1>
     </section>
     <section class="content">
-        <!-- Inhoud voor Klanten -->
+        <div class="row">
+            <div class="col-12">
+                <div class="card">
+                    <div class="card-header">
+                        <h3 class="card-title">Overzicht van Klanten</h3>
+                    </div>
+                    <div class="card-body">
+                        <table class="table table-bordered">
+                            <thead>
+                                <tr>
+                                    <th>#</th>
+                                    <th>Naam</th>
+                                    <th>Email</th>
+                                    <th>Telefoonnummer</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                {% for klant in klanten %}
+                                <tr>
+                                    <td>{{ klant.id }}</td>
+                                    <td>{{ klant.voornaam }} {{ klant.achternaam }}</td>
+                                    <td>{{ klant.email }}</td>
+                                    <td>{{ klant.telefoonnummer }}</td>
+                                </tr>
+                                {% endfor %}
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </div>
+        </div>
     </section>
 </div>
 {% endblock %}

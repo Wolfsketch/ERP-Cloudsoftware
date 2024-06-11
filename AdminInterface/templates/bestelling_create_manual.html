@@ -16,96 +16,28 @@
                     <div class="card-body">
                         <form method="post">
                             {% csrf_token %}
-                            <div class="row">
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="klant_voornaam">Klant Voornaam:</label>
-                                        {{ combined_form.klant_voornaam|add_class:"form-control" }}
+                            <h4>Klantgegevens</h4>
+                            {{ klant_form.as_p }}
+                            <h4>Bestellinggegevens</h4>
+                            {{ bestelling_form.as_p }}
+                            <h4>Producten</h4>
+                            {{ formset.management_form }}
+                            {% for form in formset %}
+                                <div class="form-row">
+                                    <div class="form-group col-md-4">
+                                        {{ form.product|add_class:"form-control" }}
                                     </div>
-                                    <div class="form-group">
-                                        <label for="klant_achternaam">Klant Achternaam:</label>
-                                        {{ combined_form.klant_achternaam|add_class:"form-control" }}
+                                    <div class="form-group col-md-2">
+                                        {{ form.hoeveelheid|add_class:"form-control" }}
                                     </div>
-                                    <div class="form-group">
-                                        <label for="klant_bedrijf">Bedrijfnaam:</label>
-                                        {{ combined_form.klant_bedrijf|add_class:"form-control" }}
+                                    <div class="form-group col-md-3">
+                                        {{ form.eenheidsprijs|add_class:"form-control" }}
                                     </div>
-                                    <div class="form-group">
-                                        <label for="klant_email">Email:</label>
-                                        {{ combined_form.klant_email|add_class:"form-control" }}
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="klant_telefoonnummer">Telefoon:</label>
-                                        {{ combined_form.klant_telefoonnummer|add_class:"form-control" }}
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="klant_facturatieadres">Facturatieadres:</label>
-                                        {{ combined_form.klant_facturatieadres|add_class:"form-control" }}
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="klant_adres">Afleveradres:</label>
-                                        {{ combined_form.klant_adres|add_class:"form-control" }}
+                                    <div class="form-group col-md-3">
+                                        {{ form.belastingen|add_class:"form-control" }}
                                     </div>
                                 </div>
-                                <div class="col-md-6">
-                                    <div class="form-group">
-                                        <label for="besteldatum">Besteldatum:</label>
-                                        {{ combined_form.besteldatum|add_class:"form-control" }}
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="voorschot">Voorschot:</label>
-                                        {{ combined_form.voorschot|add_class:"form-control" }}
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="betaling">Betaling:</label>
-                                        {{ combined_form.betaling|add_class:"form-control" }}
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="totaal">Totaal:</label>
-                                        <div id="totaal-boven" class="form-control-static">0.00 €</div>
-                                        {{ combined_form.totaal.as_hidden }}
-                                    </div>
-                                    <div class="form-group">
-                                        <label for="status">Status:</label>
-                                        {{ combined_form.status|add_class:"form-control" }}
-                                    </div>              
-                                </div>
-                            </div>
-                            <h3>Producten</h3>
-                            <table class="table">
-                                <thead>
-                                    <tr>
-                                        <th>Product</th>
-                                        <th>Omschrijving</th>
-                                        <th>Hoeveelheid</th>
-                                        <th>Eenheidsprijs</th>
-                                        <th>Belastingen</th>
-                                        <th>Totaal</th>
-                                    </tr>
-                                </thead>
-                                <tbody>
-                                    {% for form in formset %}
-                                        <tr>
-                                            <td>{{ form.product }}</td>
-                                            <td>{{ form.omschrijving }}</td>
-                                            <td>{{ form.hoeveelheid }}</td>
-                                            <td>{{ form.eenheidsprijs }}</td>
-                                            <td>{{ form.belastingen }}</td>
-                                            <td class="subtotaal-cell text-right">
-                                                0.00 €
-                                            </td>
-                                        </tr>
-                                    {% endfor %}
-                                </tbody>
-                            </table>
-                            <div class="row totals-row">
-                                <div class="col-md-12 text-right">
-                                    <p>Netto bedrag: <span id="netto-bedrag">0.00 €</span></p>
-                                    <p>BTW: <span id="btw">0.00 €</span></p>
-                                    <p>Totaal: <span id="totaal">0.00 €</span></p>
-                                    <p>Nog te betalen: <span id="nog-te-betalen">0.00 €</span></p>
-                                </div>
-                            </div>
+                            {% endfor %}
                             <button type="submit" class="btn btn-primary">Bestelling Opslaan</button>
                         </form>
                     </div>
@@ -115,6 +47,7 @@
     </section>
 </div>
 {% endblock %}
+
 
 <style>
 .hidden-select {
